@@ -8,7 +8,8 @@ const Playground = () => {
       
       {images.map((item, index) => (
         <Pressable>
-        <Image key={item}source={require('../images/icon.jpg')} style={styles.img}/>
+       <Image source={require("../assets/images/snake.jpg")} style={styles.img} />
+
       </Pressable>
       ))}
     </View>

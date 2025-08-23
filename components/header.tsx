@@ -1,40 +1,23 @@
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React = require('react');
+import { View, Text, TouchableOpacity } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-const Header = () => {
+
+export default function Index() {
   return (
     <LinearGradient
-  colors={["#ff512f", "#dd2476"]}
-  style={styles.headerContainer}
->
-  <View style={styles.headerContainer}>
-    <Text style={[styles.textWhite, styles.textTitle]}>Game on</Text>
-    <TouchableOpacity><Text style={styles.textWhite}>☰</Text></TouchableOpacity>
-  </View>
-  
-</LinearGradient>
-  )
+      colors={["#eaeaea", "#9898b9"]}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 1 }}
+      className="flex-1 p-4"
+    >
+      <View className="flex-row justify-between items-center">
+        {/* Title */}
+        <Text className="text-black text-xl font-bold">GAME ON</Text>
+
+        {/* Menu Button */}
+        <TouchableOpacity>
+          <Text className="text-white text-2xl">☰</Text>
+        </TouchableOpacity>
+      </View>
+    </LinearGradient>
+  );
 }
-
-export default Header
-
-const styles = StyleSheet.create({
-  textWhite: {
-    color: 'blur',
-  },
-  textTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  headerContainer:{
-    position:"absolute",
-    top:0,
-    width:"100%",
-    display:"flex",
-    flexDirection:"row",
-    alignItems:"center",
-    justifyContent:"space-between",
-    padding:10,
-    borderRadius:4
-  }
-})
