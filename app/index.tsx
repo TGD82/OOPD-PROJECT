@@ -1,7 +1,7 @@
-import { Text, View } from "react-native";
 import Header from "@/components/header";
 import Playground from "@/components/playground";
 import { LinearGradient } from "expo-linear-gradient";
+import React = require("react");
 export default function Index() {
   return (
     <LinearGradient

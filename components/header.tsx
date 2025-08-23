@@ -1,5 +1,5 @@
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React from 'react'
+import React = require('react');
 import { LinearGradient } from "expo-linear-gradient";
 const Header = () => {
   return (
@@ -27,7 +27,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   headerContainer:{
-    position:"fixed",
+    position:"absolute",
     top:0,
     width:"100%",
     display:"flex",

@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View ,Pressable,Image,ScrollView } from 'react-native'
-import React from 'react'
+import React = require('react');
 
 const Playground = () => {
     const images = Array.from({ length: 10 }, (_, i) => i);
