@@ -1,23 +1,36 @@
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity ,Button,StyleSheet} from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 
-export default function Index() {
-  return (
-    <LinearGradient
-      colors={["#eaeaea", "#9898b9"]}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 1, y: 1 }}
-      className="flex-1 p-4"
-    >
-      <View className="flex-row justify-between items-center">
-        {/* Title */}
-        <Text className="text-black text-xl font-bold">GAME ON</Text>
 
-        {/* Menu Button */}
-        <TouchableOpacity>
-          <Text className="text-white text-2xl">☰</Text>
-        </TouchableOpacity>
+export default function App() {
+  return (
+    <View>
+<Text style={{ fontWeight: "700", fontSize: 25, textAlign: "center", backgroundColor:"white"}}>
+  <Text style={{  color: "black" }}>Game </Text>
+  <Text style={{ color: "red" }}>On</Text>
+</Text>
+
+
+    <View style={styles.container}>
+      <Button title="Profile" color="lightblue" onPress={() => {}} />
+      <View style={styles.buttonSpacing}>
+        <Button title="Friends" color="lightblue" onPress={() => {}} />
       </View>
-    </LinearGradient>
+    </View>
+    </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: "row",     
+    justifyContent: "flex-end",
+    padding: 10,
+    borderRadius:10,
+  },
+  buttonSpacing: {
+    marginLeft: 10,           
+  },
+});
+
+
