@@ -1,5 +1,4 @@
-import { View, Text, TouchableOpacity ,Button,StyleSheet} from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import React from "react";
 
 
@@ -13,9 +12,14 @@ export default function App() {
 
 
     <View style={styles.container}>
-      <Button title="Profile" color="lightblue" onPress={() => {}} />
+       <TouchableOpacity style={styles.button} onPress={() =>{}}>
+      <Text style={styles.text}>Profile</Text>
+    </TouchableOpacity>
       <View style={styles.buttonSpacing}>
-        <Button title="Friends" color="lightblue" onPress={() => {}} />
+
+       <TouchableOpacity style={styles.button} onPress={() => {}}>
+      <Text style={styles.text}>Follow</Text>
+    </TouchableOpacity>
       </View>
     </View>
     </View>
@@ -31,6 +35,19 @@ const styles = StyleSheet.create({
   },
   buttonSpacing: {
     marginLeft: 10,           
+  },
+  button: {
+    borderRadius:25,
+    backgroundColor: "grey",
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    alignItems: "center",
+    
+  },
+  text: {
+    color: "white",
+    fontWeight: "700",
+    fontSize: 16,
   },
 });
 
