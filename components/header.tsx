@@ -1,5 +1,6 @@
 import { View, Text, TouchableOpacity ,Button,StyleSheet} from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
+import React from "react";
 
 
 export default function App() {
