@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { Image, ImageBackground, Pressable, ScrollView, StyleSheet, Text } from 'react-native';
+import { Image, ImageBackground, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 const Playground = () => {
 const[data,setData]=useState([]);
-const getapi=async()=>{
-  const result=await fetch("https://jsonplaceholder.typicode.com/todos");
-  const dat=await result.json();
-  setData(dat);
-}
+
+// const getapi=async()=>{
+//   const result=await fetch("https://jsonplaceholder.typicode.com/todos");
+//   const dat=await result.json();
+//   setData(dat);
+// }
 useEffect(()=>{
 const fakeAPI = [
       {
@@ -72,17 +73,20 @@ const fakeAPI = [
 
     <ImageBackground
    source={{
-    uri: "https://media.istockphoto.com/id/1279551163/photo/abstract-full-frame-fire-cloud-background.webp?a=1&b=1&s=612x612&w=0&k=20&c=0-o5RSC1c9kUW4Pikwv6KWolymfeqrHn-5dsFZj7dHA="
+    uri: "https://imgs.search.brave.com/Qlm95LwmgLfe00NcjGzSVcydCmLQytMQoojqV-j25E8/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9pbWcu/ZnJlZXBpay5jb20v/ZnJlZS12ZWN0b3Iv/ZWxlZ2FudC13aGl0/ZS1iYWNrZ3JvdW5k/LXdpdGgtc2hpbnkt/bGluZXNfMTAxNy0x/NzU4MC5qcGc_c2Vt/dD1haXNfaHlicmlk/Jnc9NzQwJnE9ODA"
   }}
  style={styles.background}
   resizeMode="cover"
 >   
-<ScrollView>
+ <ScrollView contentContainerStyle={styles.scrollContent}>
+        <View style={styles.wrapContainer}>
+  
   { data.map((item)=>(
     <Pressable key={item.id}style={styles.card}>
  <Image source={item.image} style={styles.img} />
        <Text style={styles.title}> {item.title}</Text>
   </Pressable>))}
+  </View>
        </ScrollView>
     </ImageBackground>
    
@@ -91,41 +95,40 @@ const fakeAPI = [
 
 export default Playground
 
-
 const styles = StyleSheet.create({
   background: {
     flex: 1,
     width: "100%",
     height: "100%",
   },
-  container: {
+  scrollContent: {
+    padding: 12,
+  },
+  wrapContainer: {
     flexDirection: "row",
     flexWrap: "wrap",
-    justifyContent: "center",
-    padding: 10,
+    justifyContent: "space-between",
   },
   card: {
-    width: 160,
-    margin: 10,
-    backgroundColor: "#fff",
+    width: "48%",      
+    aspectRatio: 1,    
+    marginBottom: 16,
     borderRadius: 12,
     overflow: "hidden",
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOpacity: 0.2,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 5,
     elevation: 5,
   },
   img: {
-    width: "100%",
-    height: 120,
+    flex: 1,            
+    justifyContent: "flex-end",
+  },
+  overlay: {
+    backgroundColor: "rgba(0,0,0,0.4)", 
+    padding: 6,
   },
   title: {
-    padding: 8,
     fontSize: 14,
     fontWeight: "600",
-    color: "#333",
+    color: "#fff",
     textAlign: "center",
   },
 });
