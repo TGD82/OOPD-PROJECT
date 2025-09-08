@@ -82,7 +82,7 @@ const fakeAPI = [
         <View style={styles.wrapContainer}>
   
   { data.map((item)=>(
-    <Pressable key={item.id}style={styles.card}>
+    <Pressable key={item.id}style={styles.card} >
  <Image source={item.image} style={styles.img} />
        <Text style={styles.title}> {item.title}</Text>
   </Pressable>))}
