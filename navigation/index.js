@@ -3,6 +3,8 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import homeScreen from "../screens/homeScreen";
 import game2048 from "../screens/2048"
 import Blockoduko from "../screens/blockoduko"
+import PacmanScreen from "../screens/PacmanScreen"
+
 const Stack = createNativeStackNavigator();
 const StackNavigatorContainer =()=>{
     return (
@@ -10,6 +12,7 @@ const StackNavigatorContainer =()=>{
         <Stack.Screen name="Home" component={homeScreen} />
         <Stack.Screen name="2048" component={game2048}/>
         <Stack.Screen name="Blockoduko" component={Blockoduko}/>
+        <Stack.Screen name="PacmanScreen" component={PacmanScreen}/>
     </Stack.Navigator>
     )
 }
