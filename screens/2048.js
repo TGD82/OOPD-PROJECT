@@ -1,14 +1,19 @@
 import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
-
-const Game2048 = () => {
+class tile{
+     value;
+    tile(n){
+      this.value=n
+    }
+}
+const game2048 = () => {
   return (
     <View>
-      <Text>Game2048</Text>
+      
     </View>
   )
 }
 
-export default Game2048
+export default game2048
 
 const styles = StyleSheet.create({})
