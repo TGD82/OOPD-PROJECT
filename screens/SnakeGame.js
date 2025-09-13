@@ -2,7 +2,7 @@
 import React, { Component } from "react";
 import { View, StyleSheet, TouchableOpacity, Text } from "react-native";
 
-// ======= OOP CLASSES ======= //
+
 class Point {
   constructor(x, y) {
     this.x = x;
@@ -16,11 +16,11 @@ class Point {
 class Snake {
   constructor(initialPos) {
     this.body = [initialPos];
-    this.direction = new Point(1, 0); // move right initially
+    this.direction = new Point(1, 0); 
   }
 
   setDirection(newDir) {
-    // prevent reverse direction
+    
     if (this.direction.x === -newDir.x && this.direction.y === -newDir.y) return;
     this.direction = newDir;
   }
@@ -66,7 +66,6 @@ class Food {
   }
 }
 
-// ======= GAME COMPONENT ======= //
 export default class SnakeGame extends Component {
   constructor(props) {
     super(props);
@@ -82,7 +81,7 @@ export default class SnakeGame extends Component {
   }
 
   componentDidMount() {
-    this.gameLoop = setInterval(this.update, 200); // speed control
+    this.gameLoop = setInterval(this.update, 200); 
   }
 
   componentWillUnmount() {
@@ -99,7 +98,7 @@ export default class SnakeGame extends Component {
 
     const head = snake.getHead();
 
-    // wall collision
+    
     if (
       head.x < 0 ||
       head.y < 0 ||
@@ -111,9 +110,9 @@ export default class SnakeGame extends Component {
       return;
     }
 
-    // food collision
+ 
     if (head.equals(food.position)) {
-      snake.move(true); // grow
+      snake.move(true); 
       food.relocate(snake);
       this.setState((prev) => ({ score: prev.score + 10 }));
     }
@@ -133,7 +132,7 @@ export default class SnakeGame extends Component {
   renderGrid() {
     const items = [];
 
-    // snake
+   
     this.state.snake.body.forEach((part, i) => {
       items.push(
         <View
@@ -150,7 +149,7 @@ export default class SnakeGame extends Component {
       );
     });
 
-    // food
+    
     items.push(
       <View
         key="food"
