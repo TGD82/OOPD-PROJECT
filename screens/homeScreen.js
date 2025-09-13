@@ -8,6 +8,7 @@ const homeScreen = ({navigation}) => {
     <View>
       <Button onPress={()=>navigation.navigate("2048")}>2048</Button>
       <Button onPress={()=>navigation.navigate("Blockoduko")}>Blockoduko</Button>
+       <Button onPress={()=>navigation.navigate("SnakeGame")}>SnakeGame</Button>
       <App/>
       <Playground/>
       
