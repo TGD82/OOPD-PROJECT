@@ -64,7 +64,7 @@ const fakeAPI = [
     ];
 
  setTimeout(() => {
-      setData(fakeAPI);
+      setData( fakeAPI );
     }, 1000);
   }, []);
    
