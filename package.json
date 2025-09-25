@@ -50,5 +50,17 @@
     "eslint-config-expo": "~9.2.0",
     "typescript": "~5.8.3"
   },
-  "private": true
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TGD82/OOPD-PROJECT.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/TGD82/OOPD-PROJECT/issues"
+  },
+  "homepage": "https://github.com/TGD82/OOPD-PROJECT#readme",
+  "description": ""
 }
