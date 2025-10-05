@@ -148,29 +148,37 @@ const Blockoduko = () => {
     }, []);
 
     const handleCellPress = (rowIndex, colIndex) => {
-        if (!selectedBlock) {
-            Alert.alert("No Block Selected", "Please select a block from the bottom first.");
-            return;
+    if (!selectedBlock) {
+        Alert.alert("No Block Selected", "Please select a block from the bottom first.");
+        return;
+    }
+
+    const blockHeight = selectedBlock.shape.length;
+    const blockWidth = selectedBlock.shape[0].length;
+    const startRow = rowIndex - Math.floor(blockHeight / 2);
+    const startCol = colIndex - Math.floor(blockWidth / 2);
+    if (grid.canPlaceBlock(selectedBlock, startRow, startCol)) {
+        const newGrid = grid.clone();
+        newGrid.placeBlock(selectedBlock, startRow, startCol);
+        const clearedCells = newGrid.clearFullLines();
+        if (clearedCells > 0){
+            setScore(prev => prev + clearedCells);
         }
-        if (grid.canPlaceBlock(selectedBlock, rowIndex, colIndex)) {
-            const newGrid = grid.clone();
-            newGrid.placeBlock(selectedBlock, rowIndex, colIndex);
-            const clearedCells = newGrid.clearFullLines();
-            if (clearedCells > 0) {
-                setScore(prev => prev + clearedCells);
-            }
-            setGrid(newGrid);
-            const remainingBlocks = availableBlocks.filter(b => b !== selectedBlock);
-            setSelectedBlock(null);
-            if (remainingBlocks.length === 0) {
-                setAvailableBlocks(blockGenerator.getNewBlockSet());
-            } else {
-                setAvailableBlocks(remainingBlocks);
-            }
-        } else {
-            Alert.alert("Invalid Move", "Cannot place the block here.");
+        setGrid(newGrid);
+        const remainingBlocks = availableBlocks.filter(b => b !== selectedBlock);
+        setSelectedBlock(null);
+        if(remainingBlocks.length === 0){
+            setAvailableBlocks(blockGenerator.getNewBlockSet());
         }
-    };
+        else{
+            setAvailableBlocks(remainingBlocks);
+        }
+    }
+    else{
+        Alert.alert("Invalid Move", "Cannot place the block here.");
+    }
+};
+
 
     return (
         <View style={styles.container}>
