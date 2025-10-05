@@ -10,6 +10,7 @@ const homeScreen = ({navigation}) => {
       <Button onPress={()=>navigation.navigate("Blockoduko")}>Blockoduko</Button>
        <Button onPress={()=>navigation.navigate("PacmanScreen")}>pacman</Button>
        <Button onPress={()=>navigation.navigate("SnakeGame")}>SnakeGame</Button>
+       <Button onPress={()=>navigation.navigate("DinoJump")}>DinoJump</Button>
       <App/>
       <Playground/>
       
