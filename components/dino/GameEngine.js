@@ -1,4 +1,4 @@
-import { Dino } from './dino';
+import { Dino } from './Dino';
 import { Obstacle } from './Obstacle';
 import { Ground } from './Ground';
 
