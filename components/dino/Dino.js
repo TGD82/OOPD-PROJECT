@@ -1,9 +1,8 @@
 import { Entity } from './Entity';
 
-// Dino Class - Inherits from Entity (Inheritance)
 export class Dino extends Entity {
   constructor(x, y) {
-    super(x, y, 45,50); // Call parent constructor
+    super(x, y, 45,50);
     this.velocityY = 0;
     this.isJumping = false;
     this.gravity = 0.8;
@@ -11,7 +10,7 @@ export class Dino extends Entity {
     this.groundY = y;
   }
 
-  // Polymorphism - Override update method
+
   update() {
     if (this.isJumping) {
       this.velocityY += this.gravity;
@@ -40,7 +39,7 @@ export class Dino extends Entity {
     this.active = true;
   }
 
-  // Encapsulation - Getter for state
+
   getState() {
     return {
       x: this.x,

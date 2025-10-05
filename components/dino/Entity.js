@@ -1,4 +1,4 @@
-// Base Class - Parent of all game entities
+// Base Class 
 export class Entity {
   constructor(x, y, width, height) {
     this.x = x;
@@ -8,7 +8,7 @@ export class Entity {
     this.active = true;
   }
 
-  // Encapsulation - Getter methods
+  // Encapsulation 
   getPosition() {
     return { x: this.x, y: this.y };
   }
@@ -22,12 +22,12 @@ export class Entity {
     };
   }
 
-  // Virtual method - will be overridden by child classes (Polymorphism)
+
   update() {
-    // To be implemented by child classes
+
   }
 
-  // Check collision with another entity
+
   checkCollision(otherEntity) {
     const bounds1 = this.getBounds();
     const bounds2 = otherEntity.getBounds();
