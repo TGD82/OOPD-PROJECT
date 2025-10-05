@@ -1,50 +1,44 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 
 const GRID_SIZE = 30;
-const CELL_SIZE = 30;
+const CELL_SIZE = 15;
 const INITIAL_SPEED = 150;
 
-// ABSTRACTION: Abstract base class for game entities
 class GameObject {
   #x;
-  #y; // HASH for private
+  #y; 
   constructor(x, y) {
-    this.#x = x; // ENCAPSULATION: Private properties
+    this.#x = x; 
     this.#y = y;
   }
 
-  // ENCAPSULATION: Getters and setters
   get x() { return this.#x; }
   get y() { return this.#y; }
   set x(value) { this.#x = value; }
   set y(value) { this.#y = value; }
 
-  // Abstract method to be implemented by subclasses
   getPosition() {
     return { x: this.#x, y: this.#y };
   }
 
-  // Abstract render method
   render() {
     throw new Error('RENDER SHOULD BE IMPLEMENTED BY SUBCLASS');
   }
 }
 
-// INHERITANCE: Food inherits from GameObject
 class Food extends GameObject {
   #type;
   #points;
-  constructor(x, y, type = 'normal') {
+  constructor(x, y, type='normal') {
     super(x, y);
     this.#type = type;
-    this.#points = type === 'special' ? 5 : 1;
+    this.#points = type==='special' ? 5 : 1;
   }
 
-  // ENCAPSULATION: Getter for points
   get points() { return this.#points; }
   get type() { return this.#type; }
 
-  // POLYMORPHISM: Override render method
   render() {
     return {
       position: this.getPosition(),
@@ -53,13 +47,11 @@ class Food extends GameObject {
     };
   }
 
-  // Method to check collision with snake
   isEatenBy(snakeHead) {
-    return this.x === snakeHead.x && this.y === snakeHead.y;
+    return this.x===snakeHead.x && this.y===snakeHead.y;
   }
 }
 
-// INHERITANCE: SnakeSegment inherits from GameObject
 class SnakeSegment extends GameObject {
   #isHead;
   constructor(x, y, isHead = false) {
@@ -70,7 +62,6 @@ class SnakeSegment extends GameObject {
   get isHead() { return this.#isHead; }
   set isHead(value) { this.#isHead = value; }
 
-  // POLYMORPHISM: Override render method
   render() {
     return {
       position: this.getPosition(),
@@ -80,7 +71,6 @@ class SnakeSegment extends GameObject {
   }
 }
 
-// ABSTRACTION & ENCAPSULATION: Snake class managing snake behavior
 class Snake {
   #segments;
   #direction;
@@ -92,8 +82,7 @@ class Snake {
     this.#direction = { x: 1, y: 0 };
     this.#nextDirection = { x: 1, y: 0 };
     this.#growing = false;
-    
-    // Initialize snake
+  
     for (let i = 0; i < initialLength; i++) {
       this.#segments.push(
         new SnakeSegment(initialLength - i, Math.floor(GRID_SIZE / 2), i === 0)
@@ -101,13 +90,12 @@ class Snake {
     }
   }
 
-  // ENCAPSULATION: Public interface for snake
   get head() { return this.#segments[0]; }
   get body() { return this.#segments; }
   get length() { return this.#segments.length; }
+  get direction() { return this.#nextDirection; }
 
   setDirection(newDirection) {
-    // Prevent reversing
     if (newDirection.x !== -this.#direction.x || newDirection.y !== -this.#direction.y) {
       this.#nextDirection = newDirection;
     }
@@ -119,7 +107,6 @@ class Snake {
 
   move() {
     this.#direction = this.#nextDirection;
-    
     const newHead = new SnakeSegment(
       this.head.x + this.#direction.x,
       this.head.y + this.#direction.y,
@@ -155,7 +142,6 @@ class Snake {
   }
 }
 
-// ABSTRACTION: Game Manager class
 class GameManager {
   #snake;
   #food;
@@ -195,19 +181,29 @@ class GameManager {
   update() {
     if (!this.#isRunning) return { gameOver: false };
 
-    this.#snake.move();
+    const dir = this.#snake.direction;
+    const nextX = this.#snake.head.x + dir.x;
+    const nextY = this.#snake.head.y + dir.y;
 
-    if (this.#snake.checkWallCollision() || this.#snake.checkSelfCollision()) {
+    if (nextX < 0 || nextX >= GRID_SIZE || nextY < 0 || nextY >= GRID_SIZE) {
       this.#isRunning = false;
       return { gameOver: true };
     }
+
+    
+    for (let i = 0; i < this.#snake.body.length; i++) {
+      if (nextX === this.#snake.body[i].x && nextY === this.#snake.body[i].y) {
+        this.#isRunning = false;
+        return { gameOver: true };
+      }
+    }
+
+    this.#snake.move();
 
     if (this.#food.isEatenBy(this.#snake.head)) {
       this.#score += this.#food.points;
       this.#snake.grow();
       this.spawnFood();
-      
-      // Increase speed every 5 points
       if (this.#score % 5 === 0) {
         this.#speed = Math.max(50, this.#speed - 10);
       }
@@ -225,10 +221,10 @@ class GameManager {
   }
 }
 
-// Main React Component
 export default function SnakeGame() {
   const [gameState, setGameState] = useState(null);
   const [renderTrigger, setRenderTrigger] = useState(0);
+  const [showGameOver, setShowGameOver] = useState(false);
   const gameManagerRef = useRef(null);
 
   useEffect(() => {
@@ -242,7 +238,7 @@ export default function SnakeGame() {
     const interval = setInterval(() => {
       const result = gameState.update();
       if (result.gameOver) {
-        alert(`Game Over! Score: ${gameState.score}`);
+        setShowGameOver(true);
       }
       setRenderTrigger(prev => prev + 1);
     }, gameState.speed);
@@ -250,50 +246,23 @@ export default function SnakeGame() {
     return () => clearInterval(interval);
   }, [gameState?.isRunning, gameState?.speed, renderTrigger]);
 
-  useEffect(() => {
-    const handleKeyPress = (e) => {
-      if (!gameState) return;
-      
-      switch(e.key) {
-        case 'ArrowUp':
-          e.preventDefault();
-          gameState.snake.setDirection({ x: 0, y: -1 });
-          break;
-        case 'ArrowDown':
-          e.preventDefault();
-          gameState.snake.setDirection({ x: 0, y: 1 });
-          break;
-        case 'ArrowLeft':
-          e.preventDefault();
-          gameState.snake.setDirection({ x: -1, y: 0 });
-          break;
-        case 'ArrowRight':
-          e.preventDefault();
-          gameState.snake.setDirection({ x: 1, y: 0 });
-          break;
-        case ' ':
-          e.preventDefault();
-          gameState.isRunning ? gameState.pause() : gameState.start();
-          setRenderTrigger(prev => prev + 1);
-          break;
-        default:
-          break;
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyPress);
-    return () => window.removeEventListener('keydown', handleKeyPress);
-  }, [gameState]);
-
   const handleDirection = (direction) => {
-    if (gameState) {
+    if (gameState && !showGameOver) {
       gameState.snake.setDirection(direction);
+      if (!gameState.isRunning) {
+        gameState.start();
+        setRenderTrigger(prev => prev + 1);
+      }
     }
   };
 
   const handleStart = () => {
-    if (gameState) {
-      gameState.start();
+    if (gameState && !showGameOver) {
+      if (gameState.isRunning) {
+        gameState.pause();
+      } else {
+        gameState.start();
+      }
       setRenderTrigger(prev => prev + 1);
     }
   };
@@ -301,6 +270,7 @@ export default function SnakeGame() {
   const handleReset = () => {
     if (gameState) {
       gameState.reset();
+      setShowGameOver(false);
       setRenderTrigger(prev => prev + 1);
     }
   };
@@ -308,215 +278,298 @@ export default function SnakeGame() {
   if (!gameState) return null;
 
   return (
-    <div style={styles.container}>
-      <div style={styles.header}>
-        <h1 style={styles.title}>Snake Game</h1>
-        <div style={styles.scoreBoard}>
-          <div style={styles.score}>Score: {gameState.score}</div>
-          <div style={styles.info}>Level: {Math.floor((INITIAL_SPEED - gameState.speed) / 10) + 1}</div>
-        </div>
-      </div>
+    <View style={styles.container}>
+      <View style={styles.header}>
+        <Text style={styles.title}>Snake Game</Text>
+        <View style={styles.scoreBoard}>
+          <Text style={styles.score}>Score: {gameState.score}</Text>
+          <Text style={styles.info}>
+            Level: {Math.floor((INITIAL_SPEED - gameState.speed) / 10) + 1}
+          </Text>
+        </View>
+      </View>
 
-      <div style={styles.gameBoard}>
-        {/* Render Food */}
+      <View style={styles.gameBoard}>
+       
+        {showGameOver && (
+          <View style={styles.gameOverOverlay}>
+            <View style={styles.gameOverBox}>
+              <Text style={styles.gameOverTitle}>Game Over!</Text>
+              <Text style={styles.gameOverScore}>Your Score</Text>
+              <Text style={styles.gameOverScoreValue}>{gameState.score}</Text>
+              <Text style={styles.gameOverLevel}>
+                Level {Math.floor((INITIAL_SPEED - gameState.speed) / 10) + 1} Reached
+              </Text>
+              <TouchableOpacity
+                style={styles.newGameButton}
+                onPress={handleReset}
+              >
+                <Text style={styles.newGameButtonText}>New Game</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        )}
+
         {gameState.food && (
-          <div
-            style={{
-              ...styles.gameObject,
-              left: `${gameState.food.x * CELL_SIZE}px`,
-              top: `${gameState.food.y * CELL_SIZE}px`,
-              width: `${gameState.food.render().size}px`,
-              height: `${gameState.food.render().size}px`,
-              backgroundColor: gameState.food.render().color,
-              borderRadius: gameState.food.type === 'special' ? '50%' : '20%',
-              boxShadow: gameState.food.type === 'special' ? '0 0 10px #FFD700' : 'none'
-            }}
+          <View
+            style={[
+              styles.gameObject,
+              {
+                left: gameState.food.x * CELL_SIZE,
+                top: gameState.food.y * CELL_SIZE,
+                width: gameState.food.render().size,
+                height: gameState.food.render().size,
+                backgroundColor: gameState.food.render().color,
+                borderRadius: gameState.food.type === 'special' ? CELL_SIZE : CELL_SIZE / 4,
+              }
+            ]}
           />
         )}
 
-        {/* Render Snake */}
         {gameState.snake.render().map((segment, idx) => (
-          <div
+          <View
             key={idx}
-            style={{
-              ...styles.gameObject,
-              left: `${segment.position.x * CELL_SIZE}px`,
-              top: `${segment.position.y * CELL_SIZE}px`,
-              width: `${segment.size}px`,
-              height: `${segment.size}px`,
-              backgroundColor: segment.color,
-              borderRadius: segment.color === '#4ECDC4' ? '50%' : '25%',
-              boxShadow: segment.color === '#4ECDC4' ? '0 0 8px #4ECDC4' : 'none',
-              border: segment.color === '#4ECDC4' ? '2px solid #fff' : 'none'
-            }}
+            style={[
+              styles.gameObject,
+              {
+                left: segment.position.x * CELL_SIZE,
+                top: segment.position.y * CELL_SIZE,
+                width: segment.size,
+                height: segment.size,
+                backgroundColor: segment.color,
+                borderRadius: segment.color === '#4ECDC4' ? CELL_SIZE / 2 : CELL_SIZE / 4,
+                borderWidth: segment.color === '#4ECDC4' ? 2 : 0,
+                borderColor: '#fff',
+              }
+            ]}
           />
         ))}
-      </div>
+      </View>
 
-      <div style={styles.controls}>
-        <div style={styles.controlRow}>
-          <button
+      <View style={styles.controls}>
+        <View style={styles.controlRow}>
+          <TouchableOpacity
             style={styles.button}
-            onClick={() => handleDirection({ x: 0, y: -1 })}
+            onPress={() => handleDirection({ x: 0, y: -1 })}
+            disabled={showGameOver}
           >
-            ↑
-          </button>
-        </div>
-        <div style={styles.controlRow}>
-          <button
+            <Text style={styles.buttonText}>↑</Text>
+          </TouchableOpacity>
+        </View>
+        
+        <View style={styles.controlRow}>
+          <TouchableOpacity
             style={styles.button}
-            onClick={() => handleDirection({ x: -1, y: 0 })}
+            onPress={() => handleDirection({ x: -1, y: 0 })}
+            disabled={showGameOver}
           >
-            ←
-          </button>
-          <button
-            style={{...styles.button, ...styles.actionButton}}
-            onClick={gameState.isRunning ? () => { gameState.pause(); setRenderTrigger(p => p + 1); } : handleStart}
+            <Text style={styles.buttonText}>←</Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity
+            style={[styles.button, styles.actionButton]}
+            onPress={handleStart}
+            disabled={showGameOver}
           >
-            {gameState.isRunning ? '⏸' : '▶'}
-          </button>
-          <button
+            <Text style={styles.buttonText}>
+              {gameState.isRunning ? '⏸' : '▶'}
+            </Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity
             style={styles.button}
-            onClick={() => handleDirection({ x: 1, y: 0 })}
+            onPress={() => handleDirection({ x: 1, y: 0 })}
+            disabled={showGameOver}
           >
-            →
-          </button>
-        </div>
-        <div style={styles.controlRow}>
-          <button
+            <Text style={styles.buttonText}>→</Text>
+          </TouchableOpacity>
+        </View>
+        
+        <View style={styles.controlRow}>
+          <TouchableOpacity
             style={styles.button}
-            onClick={() => handleDirection({ x: 0, y: 1 })}
+            onPress={() => handleDirection({ x: 0, y: 1 })}
+            disabled={showGameOver}
           >
-            ↓
-          </button>
-        </div>
-        <button
-          style={{...styles.button, ...styles.resetButton}}
-          onClick={handleReset}
+            <Text style={styles.buttonText}>↓</Text>
+          </TouchableOpacity>
+        </View>
+        
+        <TouchableOpacity
+          style={[styles.button, styles.resetButton]}
+          onPress={handleReset}
         >
-            Reset
-        </button>
-      </div>
-    </div>
+          <Text style={styles.buttonText}>Reset</Text>
+        </TouchableOpacity>
+      </View>
+
+      
+    </View>
   );
 }
 
-const styles = {
+const styles = StyleSheet.create({
   container: {
-    display: 'flex',
-    flexDirection: 'column',
+    flex: 1,
+    backgroundColor: '#1a1a2e',
     alignItems: 'center',
     justifyContent: 'center',
-    minHeight: '100vh',
-    backgroundColor: '#1a1a2e',
-    padding: '20px',
-    fontFamily: 'Arial, sans-serif'
+    paddingTop: 40,
+    paddingBottom: 20,
   },
   header: {
-    marginBottom: '20px',
-    textAlign: 'center'
+    marginBottom: 20,
+    alignItems: 'center',
   },
   title: {
-    fontSize: '36px',
+    fontSize: 32,
     fontWeight: 'bold',
     color: '#fff',
-    margin: '0 0 15px 0',
-    textShadow: '2px 2px 4px rgba(0,0,0,0.5)'
+    marginBottom: 10,
   },
   scoreBoard: {
-    display: 'flex',
-    gap: '30px',
-    justifyContent: 'center'
+    flexDirection: 'row',
+    gap: 30,
   },
   score: {
-    fontSize: '20px',
+    fontSize: 18,
     color: '#4ECDC4',
-    fontWeight: 'bold'
+    fontWeight: 'bold',
   },
   info: {
-    fontSize: '20px',
-    color: '#FFD700',
-    fontWeight: 'bold'
+    fontSize: 18,
+    color: '#eac700',
+    fontWeight: 'bold',
   },
   gameBoard: {
-    width: `${GRID_SIZE * CELL_SIZE}px`,
-    height: `${GRID_SIZE * CELL_SIZE}px`,
+    width: GRID_SIZE * CELL_SIZE,
+    height: GRID_SIZE * CELL_SIZE,
     backgroundColor: '#16213e',
     position: 'relative',
-    border: '3px solid #4ECDC4',
-    borderRadius: '8px',
-    boxShadow: '0 0 20px rgba(78, 205, 196, 0.3)',
-    overflow: 'hidden'
+    borderWidth: 3,
+    borderColor: '#4ECDC4',
+    borderRadius: 8,
+    overflow: 'hidden',
   },
   gameObject: {
     position: 'absolute',
-    transition: 'none',
-    boxSizing: 'border-box'
   },
   controls: {
-    marginTop: '30px',
-    display: 'flex',
-    flexDirection: 'column',
+    marginTop: 30,
     alignItems: 'center',
-    gap: '5px'
+    gap: 5,
   },
   controlRow: {
-    display: 'flex',
-    gap: '5px'
+    flexDirection: 'row',
+    gap: 5,
   },
   button: {
-    width: '60px',
-    height: '60px',
+    width: 60,
+    height: 60,
     backgroundColor: '#4ECDC4',
-    border: 'none',
-    borderRadius: '10px',
-    fontSize: '24px',
+    borderRadius: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  buttonText: {
+    fontSize: 24,
     color: '#1a1a2e',
     fontWeight: 'bold',
-    cursor: 'pointer',
-    transition: 'all 0.2s',
-    boxShadow: '0 4px 6px rgba(0,0,0,0.3)'
   },
   actionButton: {
-    backgroundColor: '#FFD700'
+    backgroundColor: '#FFD700',
   },
   resetButton: {
-    width: '130px',
+    width: 130,
     backgroundColor: '#FF6B6B',
-    marginTop: '10px',
-    fontSize: '18px'
+    marginTop: 10,
   },
   legend: {
-    marginTop: '20px',
-    padding: '15px',
+    marginTop: 20,
+    paddingHorizontal: 15,
+    paddingVertical: 10,
     backgroundColor: '#16213e',
-    borderRadius: '8px',
-    textAlign: 'center'
+    borderRadius: 8,
   },
   legendText: {
     color: '#fff',
-    fontSize: '14px',
-    margin: '5px 0'
+    fontSize: 12,
+    textAlign: 'center',
   },
   oopInfo: {
-    marginTop: '30px',
-    padding: '20px',
+    marginTop: 20,
+    padding: 15,
     backgroundColor: '#16213e',
-    borderRadius: '8px',
-    maxWidth: '600px',
-    border: '2px solid #4ECDC4'
+    borderRadius: 8,
+    maxWidth: 350,
+    borderWidth: 2,
+    borderColor: '#4ECDC4',
   },
   oopTitle: {
     color: '#4ECDC4',
-    fontSize: '18px',
-    marginTop: '0',
-    marginBottom: '15px'
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 10,
   },
-  oopList: {
+  oopText: {
     color: '#fff',
-    fontSize: '14px',
-    lineHeight: '1.8',
-    margin: '0',
-    paddingLeft: '20px'
-  }
-};
+    fontSize: 12,
+    lineHeight: 20,
+    marginBottom: 5,
+  },
+  gameOverOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.85)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 8,
+    zIndex: 1000,
+  },
+  gameOverBox: {
+    backgroundColor: '#16213e',
+    padding: 30,
+    borderRadius: 15,
+    borderWidth: 3,
+    borderColor: '#4ECDC4',
+    alignItems: 'center',
+    minWidth: 280,
+  },
+  gameOverTitle: {
+    fontSize: 32,
+    fontWeight: 'bold',
+    color: '#FF6B6B',
+    marginBottom: 20,
+  },
+  gameOverScore: {
+    fontSize: 16,
+    color: '#fff',
+    marginBottom: 5,
+  },
+  gameOverScoreValue: {
+    fontSize: 48,
+    fontWeight: 'bold',
+    color: '#4ECDC4',
+    marginBottom: 10,
+  },
+  gameOverLevel: {
+    fontSize: 14,
+    color: '#eac700',
+    marginBottom: 25,
+  },
+  newGameButton: {
+    backgroundColor: '#4ECDC4',
+    paddingHorizontal: 40,
+    paddingVertical: 15,
+    borderRadius: 10,
+    elevation: 5,
+  },
+  newGameButtonText: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#1a1a2e',
+  },
+});
