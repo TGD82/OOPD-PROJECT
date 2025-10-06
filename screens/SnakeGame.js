@@ -204,9 +204,8 @@ class GameManager {
       this.#score += this.#food.points;
       this.#snake.grow();
       this.spawnFood();
-      if (this.#score % 5 === 0) {
-        this.#speed = Math.max(50, this.#speed - 10);
-      }
+      const newLevel = Math.floor(this.#score / 10) + 1;
+      this.#speed = Math.max(50, INITIAL_SPEED - (newLevel - 1) * 10);
     }
 
     return { gameOver: false };
