@@ -94,11 +94,13 @@ const App = () => {
                     <TouchableOpacity onPress={() => handleMove('left')} style={styles.button}>
                         <Text style={styles.buttonText}>Left</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={() => handleMove('down')} style={styles.button}>
-                        <Text style={styles.buttonText}>Down</Text>
-                    </TouchableOpacity>
                     <TouchableOpacity onPress={() => handleMove('right')} style={styles.button}>
                         <Text style={styles.buttonText}>Right</Text>
+                    </TouchableOpacity>
+                </View>
+                <View style={styles.row}>
+                    <TouchableOpacity onPress={() => handleMove('down')} style={styles.button}>
+                        <Text style={styles.buttonText}>Down</Text>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -176,12 +178,15 @@ const styles = StyleSheet.create({
     },
     controls: {
         marginTop: 20,
+        justifyContent:"center",
+        alignItems:"center"
     },
     button: {
         backgroundColor: '#8f7a66',
         padding: 10,
         margin: 5,
         borderRadius: 5,
+
     },
     buttonText: {
         color: '#f9f6f2',
