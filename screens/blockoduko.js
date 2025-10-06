@@ -2,33 +2,33 @@ import { useEffect, useState } from 'react';
 import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 const BLOCK_SHAPES = {
-  'DOT': [[1]],
-  'SQUARE_2X2': [[1, 1], [1, 1]],
-  'SMALL_L_DOWN_RIGHT': [[1, 0], [1, 0], [1, 1]],
-  'SMALL_L_DOWN_LEFT': [[0, 1], [0, 1], [1, 1]],
-  'SMALL_L_UP_RIGHT': [[1, 1], [1, 0], [1, 0]],
-  'SMALL_L_UP_LEFT': [[1, 1], [0, 1], [0, 1]],
-  'LINE_3_VERTICAL': [[1], [1], [1]],
-  'LINE_3_HORIZONTAL': [[1, 1, 1]],
-  'LINE_4_VERTICAL': [[1], [1], [1], [1]],
-  'LINE_4_HORIZONTAL': [[1, 1, 1, 1]],
-  'LINE_5_VERTICAL': [[1], [1], [1], [1], [1]],
-  'LINE_5_HORIZONTAL': [[1, 1, 1, 1, 1]],
-  'CORNER': [[1, 1], [1, 0]],
-  'SQUARE_3X3': [[1, 1, 1], [1, 1, 1], [1, 1, 1]],
-  'LARGE_L_DOWN_RIGHT': [[1, 0, 0], [1, 0, 0], [1, 1, 1]],
-  'LARGE_L_UP_RIGHT': [[1, 1, 1], [1, 0, 0], [1, 0, 0]],
-  'LARGE_L_DOWN_LEFT': [[0, 0, 1], [0, 0, 1], [1, 1, 1]],
-  'LARGE_L_UP_LEFT': [[1, 1, 1], [0, 0, 1], [0, 0, 1]],
-  'T_SHAPE_DOWN': [[1, 1, 1], [0, 1, 0]],
-  'T_SHAPE_UP': [[0, 1, 0], [1, 1, 1]],
-  'T_SHAPE_LEFT': [[1, 0], [1, 1], [1, 0]],
-  'T_SHAPE_RIGHT': [[0, 1], [1, 1], [0, 1]],
-  'DIAGONAL_DOWN_RIGHT': [[1, 0, 0], [0, 1, 0], [0, 0, 1]],
-  'DIAGONAL_UP_RIGHT': [[0, 0, 1], [0, 1, 0], [1, 0, 0]],
-  'DIAGONAL_DOWN_LEFT': [[0, 0, 1], [0, 1, 0], [1, 0, 0]],
-  'DIAGONAL_UP_LEFT': [[1, 0, 0], [0, 1, 0], [0, 0, 1]],
+  Dot: [[1]],
+  Square2x2: [[1, 1], [1, 1]],
+  Small_L_d_r: [[1, 0], [1, 0], [1, 1]],
+  Small_L_d_l: [[0, 1], [0, 1], [1, 1]],
+  Small_L_u_r: [[1, 1], [1, 0], [1, 0]],
+  Small_L_u_l: [[1, 1], [0, 1], [0, 1]],
+  Line_3_v: [[1], [1], [1]],
+  Line_3_h: [[1, 1, 1]],
+  Line_4_v: [[1], [1], [1], [1]],
+  Line_4_h: [[1, 1, 1, 1]],
+  Line_5_v: [[1], [1], [1], [1], [1]],
+  Line_5_h: [[1, 1, 1, 1, 1]],
+  Corner1: [[1, 1], [1, 0]],
+  Corner2: [[1, 1], [0, 1]],
+  Corner3: [[1, 0], [1, 1]],
+  Corner4: [[0, 1], [1, 1]],
+  Square3x3: [[1, 1, 1], [1, 1, 1], [1, 1, 1]],
+  Large_L_d_r: [[1, 0, 0], [1, 0, 0], [1, 1, 1]],
+  Large_L_u_r: [[1, 1, 1], [1, 0, 0], [1, 0, 0]],
+  Large_L_d_l: [[0, 0, 1], [0, 0, 1], [1, 1, 1]],
+  Large_L_u_l: [[1, 1, 1], [0, 0, 1], [0, 0, 1]],
+  T_d: [[1, 1, 1], [0, 1, 0]],
+  T_u: [[0, 1, 0], [1, 1, 1]],
+  T_l: [[1, 0], [1, 1], [1, 0]],
+  T_r: [[0, 1], [1, 1], [0, 1]],
 };
+
 
 class Block {
   constructor(shape) {
@@ -40,10 +40,12 @@ class BlockGenerator {
   constructor() {
     this.allBlocks = Object.values(BLOCK_SHAPES).map(shape => new Block(shape));
   }
+
   getRandomBlock() {
     const randomIndex = Math.floor(Math.random() * this.allBlocks.length);
     return this.allBlocks[randomIndex];
   }
+
   getNewBlockSet() {
     return [this.getRandomBlock(), this.getRandomBlock(), this.getRandomBlock()];
   }
@@ -54,69 +56,84 @@ class Grid {
     this.size = size;
     this.matrix = Array(size).fill(null).map(() => Array(size).fill(0));
   }
-  clone() {
+
+  clone(){
     const newGrid = new Grid(this.size);
     newGrid.matrix = JSON.parse(JSON.stringify(this.matrix));
     return newGrid;
   }
-  canPlaceBlock(block, startRow, startCol) {
-    for (let r = 0; r < block.shape.length; r++) {
-      for (let c = 0; c < block.shape[r].length; c++) {
-        if (block.shape[r][c] === 1) {
+
+  canPlaceBlock(block, startRow, startCol){
+    for(let r = 0; r < block.shape.length; r++){
+      for(let c = 0; c < block.shape[r].length; c++){
+        if(block.shape[r][c] === 1) {
           const boardRow = startRow + r;
           const boardCol = startCol + c;
-          if (
-            boardRow < 0 ||
-            boardCol < 0 ||
-            boardRow >= this.size ||
-            boardCol >= this.size ||
-            this.matrix[boardRow][boardCol] === 1
-          ) {
-            return false;
-          }
+          if( boardRow < 0 || boardCol < 0 || boardRow >= this.size || boardCol >= this.size || this.matrix[boardRow][boardCol] === 1) return false;
         }
       }
     }
     return true;
   }
-  placeBlock(block, startRow, startCol) {
-    for (let r = 0; r < block.shape.length; r++) {
-      for (let c = 0; c < block.shape[r].length; c++) {
-        if (block.shape[r][c] === 1) {
+
+  placeBlock(block, startRow, startCol){
+    for(let r = 0; r < block.shape.length; r++){
+      for(let c = 0; c < block.shape[r].length; c++){
+        if(block.shape[r][c] === 1){
           this.matrix[startRow + r][startCol + c] = 1;
         }
       }
     }
   }
-  clearFullLines() {
+
+  clearFullLines(){
     let clearedCells = 0;
-    for (let r = 0; r < this.size; r++) {
-      if (this.matrix[r].every(cell => cell === 1)) {
-        this.matrix[r] = Array(this.size).fill(0);
-        clearedCells += this.size;
+    const rowsToClear = [];
+    const colsToClear = [];
+
+    for(let r = 0; r < this.size; r++){
+      if(this.matrix[r].every(cell => cell === 1)){
+        rowsToClear.push(r);
       }
     }
-    for (let c = 0; c < this.size; c++) {
-      let fullColumn = true;
-      for (let r = 0; r < this.size; r++) {
-        if (this.matrix[r][c] === 0) {
-          fullColumn = false;
-          break;
-        }
-      }
-      if (fullColumn) {
-        for (let r = 0; r < this.size; r++) {
-          this.matrix[r][c] = 0;
-        }
-        clearedCells += this.size;
+
+    for(let c = 0; c < this.size; c++){
+      if(this.matrix.every(row => row[c] === 1)){
+        colsToClear.push(c);
       }
     }
+
+    for(const r of rowsToClear){
+      this.matrix[r] = Array(this.size).fill(0);
+      clearedCells += this.size;
+    }
+
+    for(const c of colsToClear){
+      clearedCells += this.size - rowsToClear.length;
+      for(let r = 0; r < this.size; r++){
+        this.matrix[r][c] = 0;
+      }
+    }
+
     return clearedCells;
   }
 }
 
-const blockGenerator = new BlockGenerator();
+function canAnyBlockBePlaced(grid, blocks) {
+  for(const block of blocks) {
+    for(let r = 0; r < grid.size; r++) {
+      for(let c = 0; c < grid.size; c++){
+        if(grid.canPlaceBlock(block, r, c)){
+          return true; 
+        }
+      }
+    }
+  }
+  return false; 
+}
 
+
+const blockGenerator = new BlockGenerator();
 const Cell = ({ value }) => {
   const cellStyle = value === 1 ? styles.filledCell : styles.emptyCell;
   return <View style={[styles.cell, cellStyle]} />;
@@ -125,7 +142,7 @@ const Cell = ({ value }) => {
 const BlockComponent = ({ block, onSelect, isSelected }) => {
   const wrapperStyle = isSelected ? [styles.blockWrapper, styles.selectedBlock] : styles.blockWrapper;
   return (
-    <TouchableOpacity onPress={onSelect} style={wrapperStyle}>
+    <TouchableOpacity onPress={onSelect} style={wrapperStyle} disabled={!onSelect}>
       {block.shape.map((row, rowIndex) => (
         <View key={rowIndex} style={styles.row}>
           {row.map((cellValue, colIndex) => (
@@ -144,29 +161,41 @@ const BlockComponent = ({ block, onSelect, isSelected }) => {
 };
 
 const Blockoduko = () => {
-  const [grid, setGrid] = useState(new Grid());
-  const [availableBlocks, setAvailableBlocks] = useState([]);
+  const [grid, setGrid] = useState(() => new Grid());
+  const [availableBlocks, setAvailableBlocks] = useState(() => blockGenerator.getNewBlockSet());
   const [score, setScore] = useState(0);
   const [selectedBlock, setSelectedBlock] = useState(null);
+  const [isGameOver, setIsGameOver] = useState(false);
 
   useEffect(() => {
+    if (availableBlocks.length > 0 && !isGameOver) {
+      if (!canAnyBlockBePlaced(grid, availableBlocks)) {
+        setIsGameOver(true);
+      }
+    }
+  }, [grid, availableBlocks, isGameOver]);
+
+  const handleRestart = () => {
+    setGrid(new Grid());
+    setScore(0);
     setAvailableBlocks(blockGenerator.getNewBlockSet());
-  }, []);
+    setSelectedBlock(null);
+    setIsGameOver(false);
+  };
+
 
   const handleCellPress = (rowIndex, colIndex) => {
-    if (!selectedBlock) {
-      Alert.alert("No Block Selected", "Please select a block from the bottom first.");
+    if (isGameOver || !selectedBlock) {
+        if (!selectedBlock && !isGameOver) {
+            Alert.alert("No Block Selected", "Please select a block from the bottom first.");
+        }
       return;
     }
 
     const blockHeight = selectedBlock.shape.length;
     const blockWidth = selectedBlock.shape[0].length;
-
-    // Center the block on the tapped cell
     let startRow = rowIndex - Math.floor(blockHeight / 2);
     let startCol = colIndex - Math.floor(blockWidth / 2);
-
-    // Clamp placement inside grid boundaries
     startRow = Math.max(0, Math.min(grid.size - blockHeight, startRow));
     startCol = Math.max(0, Math.min(grid.size - blockWidth, startCol));
 
@@ -202,7 +231,11 @@ const Blockoduko = () => {
         {grid.matrix.map((row, rowIndex) => (
           <View key={rowIndex} style={styles.row}>
             {row.map((cellValue, colIndex) => (
-              <TouchableOpacity key={colIndex} onPress={() => handleCellPress(rowIndex, colIndex)}>
+              <TouchableOpacity
+                key={colIndex}
+                onPress={() => handleCellPress(rowIndex, colIndex)}
+                disabled={isGameOver}
+              >
                 <Cell value={cellValue} />
               </TouchableOpacity>
             ))}
@@ -216,84 +249,97 @@ const Blockoduko = () => {
             key={index}
             block={block}
             isSelected={block === selectedBlock}
-            onSelect={() => setSelectedBlock(block)}
+            onSelect={!isGameOver ? () => setSelectedBlock(block) : null}
           />
         ))}
       </View>
+
+      {isGameOver && (
+        <View style={styles.gameOverOverlay}>
+          <Text style={styles.gameOverText}>Game Over</Text>
+          <Text style={styles.finalScoreText}>Final Score: {score}</Text>
+          <TouchableOpacity onPress={handleRestart} style={styles.restartButton}>
+            <Text style={styles.restartButtonText}>Play Again</Text>
+          </TouchableOpacity>
+        </View>
+      )}
     </View>
   );
 };
 
+
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f5f5f5',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 20,
-  },
-  title: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    marginBottom: 10,
-  },
-  score: {
-    fontSize: 24,
-    marginBottom: 20,
-    color: '#555',
-  },
-  instructions: {
-    marginTop: 20,
-    fontSize: 16,
-    color: '#666',
-  },
-  row: {
-    flexDirection: 'row',
-  },
-  cell: {
-    width: 35,
-    height: 35,
-    borderWidth: 1,
-    borderColor: '#eee',
-  },
-  emptyCell: {
-    backgroundColor: '#fff',
-  },
-  filledCell: {
-    backgroundColor: '#00bcd4',
-  },
-  blockContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'flex-end',
-    width: '100%',
-    paddingVertical: 20,
-    marginTop: 10,
-    height: 120,
-  },
-  blockWrapper: {
-    padding: 2,
-    borderWidth: 0,
-    backgroundColor: 'transparent',
-  },
-  selectedBlock: {
-    borderWidth: 2,
-    borderColor: '#00bcd4',
-    transform: [{ scale: 1.1 }],
-    borderRadius: 5,
-  },
-  blockCell: {
-    width: 18,
-    height: 18,
-  },
-  emptyBlockCell: {
-    backgroundColor: 'transparent',
-  },
-  filledBlockCell: {
-    backgroundColor: '#ffc107',
-    borderWidth: 1,
-    borderColor: '#e0a800',
-  },
+    container: {
+        flex: 1,
+        backgroundColor: '#f5f5f5',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: 20,
+    },
+    title: { fontSize: 32, fontWeight: 'bold', marginBottom: 10 },
+    score: { fontSize: 24, marginBottom: 20, color: '#555' },
+    instructions: { marginTop: 20, fontSize: 16, color: '#666' },
+    row: { flexDirection: 'row' },
+    cell: { width: 35, height: 35, borderWidth: 1, borderColor: '#eee' },
+    emptyCell: { backgroundColor: '#fff' },
+    filledCell: { backgroundColor: '#00bcd4' },
+    blockContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        alignItems: 'flex-end',
+        width: '100%',
+        paddingVertical: 20,
+        marginTop: 10,
+        height: 120,
+    },
+    blockWrapper: { padding: 2 },
+    selectedBlock: {
+        borderWidth: 2,
+        borderColor: '#00bcd4',
+        transform: [{ scale: 1.1 }],
+        borderRadius: 5,
+        backgroundColor: 'rgba(0, 188, 212, 0.1)'
+    },
+    blockCell: { width: 18, height: 18 },
+    emptyBlockCell: { backgroundColor: 'transparent' },
+    filledBlockCell: {
+        backgroundColor: '#ffc107',
+        borderWidth: 1,
+        borderColor: '#e0a800',
+    },
+    gameOverOverlay: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: 'rgba(0, 0, 0, 0.75)',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    gameOverText: {
+        fontSize: 48,
+        fontWeight: 'bold',
+        color: 'white',
+    },
+    finalScoreText: {
+        fontSize: 24,
+        color: 'white',
+        marginTop: 10,
+        marginBottom: 30,
+    },
+    restartButton: {
+        backgroundColor: '#ffc107',
+        paddingVertical: 15,
+        paddingHorizontal: 30,
+        borderRadius: 10,
+        elevation: 5,
+    },
+    restartButtonText: {
+        color: '#333',
+        fontSize: 20,
+        fontWeight: 'bold',
+    },
 });
 
 export default Blockoduko;
