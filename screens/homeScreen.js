@@ -130,11 +130,10 @@ const Playground = ({ navigation }) => {
       },
       {
         id: 6,
-        title: "Space War",
-        category: "Shooter",
-        icon: "🚀",
-        bgColor: "#C7CEEA",
-        screen: "SpaceInvaders",
+        category: "Arcade",
+        icon: "🐦", 
+        bgColor: "#FFD166",
+        screen: "FlappyBird",
       },
     ];
 
