@@ -29,7 +29,6 @@ const BLOCK_SHAPES = {
   T_r: [[0, 1], [1, 1], [0, 1]],
 };
 
-
 class Block {
   constructor(shape) {
     this.shape = shape;
@@ -87,7 +86,6 @@ class Grid {
   }
 
   clearFullLines(){
-    let clearedCells = 0;
     const rowsToClear = [];
     const colsToClear = [];
 
@@ -105,35 +103,34 @@ class Grid {
 
     for(const r of rowsToClear){
       this.matrix[r] = Array(this.size).fill(0);
-      clearedCells += this.size;
     }
 
     for(const c of colsToClear){
-      clearedCells += this.size - rowsToClear.length;
       for(let r = 0; r < this.size; r++){
         this.matrix[r][c] = 0;
       }
     }
 
-    return clearedCells;
+    return { clearedRows: rowsToClear.length, clearedCols: colsToClear.length };
   }
 }
 
 function canAnyBlockBePlaced(grid, blocks) {
   for(const block of blocks) {
+    if (!block) continue; 
     for(let r = 0; r < grid.size; r++) {
       for(let c = 0; c < grid.size; c++){
         if(grid.canPlaceBlock(block, r, c)){
-          return true; 
+          return true;
         }
       }
     }
   }
-  return false; 
+  return false;
 }
 
-
 const blockGenerator = new BlockGenerator();
+
 const Cell = ({ value }) => {
   const cellStyle = value === 1 ? styles.filledCell : styles.emptyCell;
   return <View style={[styles.cell, cellStyle]} />;
@@ -166,6 +163,7 @@ const Blockoduko = () => {
   const [score, setScore] = useState(0);
   const [selectedBlock, setSelectedBlock] = useState(null);
   const [isGameOver, setIsGameOver] = useState(false);
+  const [multiplier, setMultiplier] = useState(1);
 
   useEffect(() => {
     if (availableBlocks.length > 0 && !isGameOver) {
@@ -181,8 +179,8 @@ const Blockoduko = () => {
     setAvailableBlocks(blockGenerator.getNewBlockSet());
     setSelectedBlock(null);
     setIsGameOver(false);
+    setMultiplier(1);
   };
-
 
   const handleCellPress = (rowIndex, colIndex) => {
     if (isGameOver || !selectedBlock) {
@@ -202,11 +200,22 @@ const Blockoduko = () => {
     if (grid.canPlaceBlock(selectedBlock, startRow, startCol)) {
       const newGrid = grid.clone();
       newGrid.placeBlock(selectedBlock, startRow, startCol);
-      const clearedCells = newGrid.clearFullLines();
 
-      if (clearedCells > 0) {
-        setScore(prev => prev + clearedCells);
+      const blockCells = selectedBlock.shape.flat().reduce((sum, cell) => sum + cell, 0);
+      let scoreToAdd = blockCells;
+
+      const { clearedRows, clearedCols } = newGrid.clearFullLines();
+
+      if(clearedRows > 0 || clearedCols > 0){
+        const lineClearBonus = (clearedRows + clearedCols + multiplier) * 9;
+        scoreToAdd += lineClearBonus;
+
+        const newMultiplier = multiplier + clearedRows + clearedCols;
+        setMultiplier(newMultiplier);
       }
+      else setMultiplier(1);
+
+      setScore(prev => prev + scoreToAdd);
 
       setGrid(newGrid);
 
@@ -226,7 +235,10 @@ const Blockoduko = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Blockodoku</Text>
-      <Text style={styles.score}>Score: {score}</Text>
+      <View style={styles.scoreContainer}>
+          <Text style={styles.score}>Score: {score}</Text>
+          <Text style={styles.multiplier}>Multiplier: {multiplier}x</Text>
+      </View>
       <View>
         {grid.matrix.map((row, rowIndex) => (
           <View key={rowIndex} style={styles.row}>
@@ -267,7 +279,6 @@ const Blockoduko = () => {
   );
 };
 
-
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -277,7 +288,18 @@ const styles = StyleSheet.create({
         padding: 20,
     },
     title: { fontSize: 32, fontWeight: 'bold', marginBottom: 10 },
-    score: { fontSize: 24, marginBottom: 20, color: '#555' },
+    scoreContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        width: '80%',
+        marginBottom: 20,
+    },
+    score: { fontSize: 24, color: '#555' },
+    multiplier: {
+        fontSize: 24,
+        color: '#ffc107',
+        fontWeight: 'bold',
+    },
     instructions: { marginTop: 20, fontSize: 16, color: '#666' },
     row: { flexDirection: 'row' },
     cell: { width: 35, height: 35, borderWidth: 1, borderColor: '#eee' },
