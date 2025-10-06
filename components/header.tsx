@@ -50,5 +50,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
 });
-
+export const unstable_settings={
+  headerShown:false,
+}
 

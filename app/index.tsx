@@ -6,3 +6,6 @@ export default function Index() {
       <Navigation/>
   )
 };
+export const unstable_settings={
+  headerShown:false,
+}
