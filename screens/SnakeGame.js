@@ -42,7 +42,7 @@ class Food extends GameObject {
   render() {
     return {
       position: this.getPosition(),
-      color: this.#type === 'special' ? '#FFD700' : '#c48080',
+      color: this.#type === 'special' ? '#FFD700' : '#c93434ff',
       size: this.#type === 'special' ? CELL_SIZE * 1.2 : CELL_SIZE
     };
   }
@@ -65,7 +65,7 @@ class SnakeSegment extends GameObject {
   render() {
     return {
       position: this.getPosition(),
-      color: this.#isHead ? '#4ECDC4' : '#45B7AF',
+      color: this.#isHead ? '#4ea7cdff' : '#45B7AF',
       size: CELL_SIZE
     };
   }
@@ -463,8 +463,8 @@ const styles = StyleSheet.create({
     gap: 5,
   },
   button: {
-    width: 50,
-    height: 50,
+    width: 42,
+    height: 42,
     backgroundColor: '#4ECDC4',
     borderRadius: 10,
     justifyContent: 'center',
