@@ -2,29 +2,31 @@ import { useEffect, useState } from 'react';
 import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 const BLOCK_SHAPES = {
-  // ... (no changes to BLOCK_SHAPES)
-  DOT: [[1]],
-  SQUARE_2X2: [[1, 1], [1, 1]],
-  SMALL_L_DOWN_RIGHT: [[1, 0], [1, 0], [1, 1]],
-  SMALL_L_DOWN_LEFT: [[0, 1], [0, 1], [1, 1]],
-  SMALL_L_UP_RIGHT: [[1, 1], [1, 0], [1, 0]],
-  SMALL_L_UP_LEFT: [[1, 1], [0, 1], [0, 1]],
-  LINE_3_VERTICAL: [[1], [1], [1]],
-  LINE_3_HORIZONTAL: [[1, 1, 1]],
-  LINE_4_VERTICAL: [[1], [1], [1], [1]],
-  LINE_4_HORIZONTAL: [[1, 1, 1, 1]],
-  LINE_5_VERTICAL: [[1], [1], [1], [1], [1]],
-  LINE_5_HORIZONTAL: [[1, 1, 1, 1, 1]],
-  CORNER: [[1, 1], [1, 0]],
-  SQUARE_3X3: [[1, 1, 1], [1, 1, 1], [1, 1, 1]],
-  LARGE_L_DOWN_RIGHT: [[1, 0, 0], [1, 0, 0], [1, 1, 1]],
-  LARGE_L_UP_RIGHT: [[1, 1, 1], [1, 0, 0], [1, 0, 0]],
-  LARGE_L_DOWN_LEFT: [[0, 0, 1], [0, 0, 1], [1, 1, 1]],
-  LARGE_L_UP_LEFT: [[1, 1, 1], [0, 0, 1], [0, 0, 1]],
-  T_SHAPE_DOWN: [[1, 1, 1], [0, 1, 0]],
-  T_SHAPE_UP: [[0, 1, 0], [1, 1, 1]],
-  T_SHAPE_LEFT: [[1, 0], [1, 1], [1, 0]],
-  T_SHAPE_RIGHT: [[0, 1], [1, 1], [0, 1]],
+  Dot: [[1]],
+  Square2x2: [[1, 1], [1, 1]],
+  Small_L_d_r: [[1, 0], [1, 0], [1, 1]],
+  Small_L_d_l: [[0, 1], [0, 1], [1, 1]],
+  Small_L_u_r: [[1, 1], [1, 0], [1, 0]],
+  Small_L_u_l: [[1, 1], [0, 1], [0, 1]],
+  Line_3_v: [[1], [1], [1]],
+  Line_3_h: [[1, 1, 1]],
+  Line_4_v: [[1], [1], [1], [1]],
+  Line_4_h: [[1, 1, 1, 1]],
+  Line_5_v: [[1], [1], [1], [1], [1]],
+  Line_5_h: [[1, 1, 1, 1, 1]],
+  Corner1: [[1, 1], [1, 0]],
+  Corner2: [[1, 1], [0, 1]],
+  Corner3: [[1, 0], [1, 1]],
+  Corner4: [[0, 1], [1, 1]],
+  Square3x3: [[1, 1, 1], [1, 1, 1], [1, 1, 1]],
+  Large_L_d_r: [[1, 0, 0], [1, 0, 0], [1, 1, 1]],
+  Large_L_u_r: [[1, 1, 1], [1, 0, 0], [1, 0, 0]],
+  Large_L_d_l: [[0, 0, 1], [0, 0, 1], [1, 1, 1]],
+  Large_L_u_l: [[1, 1, 1], [0, 0, 1], [0, 0, 1]],
+  T_d: [[1, 1, 1], [0, 1, 0]],
+  T_u: [[0, 1, 0], [1, 1, 1]],
+  T_l: [[1, 0], [1, 1], [1, 0]],
+  T_r: [[0, 1], [1, 1], [0, 1]],
 };
 
 
@@ -38,10 +40,12 @@ class BlockGenerator {
   constructor() {
     this.allBlocks = Object.values(BLOCK_SHAPES).map(shape => new Block(shape));
   }
+
   getRandomBlock() {
     const randomIndex = Math.floor(Math.random() * this.allBlocks.length);
     return this.allBlocks[randomIndex];
   }
+
   getNewBlockSet() {
     return [this.getRandomBlock(), this.getRandomBlock(), this.getRandomBlock()];
   }
@@ -52,71 +56,61 @@ class Grid {
     this.size = size;
     this.matrix = Array(size).fill(null).map(() => Array(size).fill(0));
   }
-  clone() {
+
+  clone(){
     const newGrid = new Grid(this.size);
     newGrid.matrix = JSON.parse(JSON.stringify(this.matrix));
     return newGrid;
   }
-  canPlaceBlock(block, startRow, startCol) {
-    for (let r = 0; r < block.shape.length; r++) {
-      for (let c = 0; c < block.shape[r].length; c++) {
-        if (block.shape[r][c] === 1) {
+
+  canPlaceBlock(block, startRow, startCol){
+    for(let r = 0; r < block.shape.length; r++){
+      for(let c = 0; c < block.shape[r].length; c++){
+        if(block.shape[r][c] === 1) {
           const boardRow = startRow + r;
           const boardCol = startCol + c;
-          if (
-            boardRow < 0 ||
-            boardCol < 0 ||
-            boardRow >= this.size ||
-            boardCol >= this.size ||
-            this.matrix[boardRow][boardCol] === 1
-          ) {
-            return false;
-          }
+          if( boardRow < 0 || boardCol < 0 || boardRow >= this.size || boardCol >= this.size || this.matrix[boardRow][boardCol] === 1) return false;
         }
       }
     }
     return true;
   }
-  placeBlock(block, startRow, startCol) {
-    for (let r = 0; r < block.shape.length; r++) {
-      for (let c = 0; c < block.shape[r].length; c++) {
-        if (block.shape[r][c] === 1) {
+
+  placeBlock(block, startRow, startCol){
+    for(let r = 0; r < block.shape.length; r++){
+      for(let c = 0; c < block.shape[r].length; c++){
+        if(block.shape[r][c] === 1){
           this.matrix[startRow + r][startCol + c] = 1;
         }
       }
     }
   }
-  clearFullLines() {
-    // This logic has been slightly improved to prevent double-counting cleared cells at intersections.
+
+  clearFullLines(){
     let clearedCells = 0;
     const rowsToClear = [];
     const colsToClear = [];
 
-    // Find full rows
-    for (let r = 0; r < this.size; r++) {
-      if (this.matrix[r].every(cell => cell === 1)) {
+    for(let r = 0; r < this.size; r++){
+      if(this.matrix[r].every(cell => cell === 1)){
         rowsToClear.push(r);
       }
     }
 
-    // Find full columns
-    for (let c = 0; c < this.size; c++) {
-      if (this.matrix.every(row => row[c] === 1)) {
+    for(let c = 0; c < this.size; c++){
+      if(this.matrix.every(row => row[c] === 1)){
         colsToClear.push(c);
       }
     }
 
-    // Clear rows
-    for (const r of rowsToClear) {
+    for(const r of rowsToClear){
       this.matrix[r] = Array(this.size).fill(0);
       clearedCells += this.size;
     }
 
-    // Clear columns
-    for (const c of colsToClear) {
-      // Add to score only for cells that weren't part of an already cleared row
+    for(const c of colsToClear){
       clearedCells += this.size - rowsToClear.length;
-      for (let r = 0; r < this.size; r++) {
+      for(let r = 0; r < this.size; r++){
         this.matrix[r][c] = 0;
       }
     }
@@ -125,24 +119,21 @@ class Grid {
   }
 }
 
-// ✅ Moved isValid to be a standalone utility function for better separation
 function canAnyBlockBePlaced(grid, blocks) {
-  for (const block of blocks) {
-    // Check every possible position for the current block
-    for (let r = 0; r < grid.size; r++) {
-      for (let c = 0; c < grid.size; c++) {
-        if (grid.canPlaceBlock(block, r, c)) {
-          return true; // Found at least one valid move
+  for(const block of blocks) {
+    for(let r = 0; r < grid.size; r++) {
+      for(let c = 0; c < grid.size; c++){
+        if(grid.canPlaceBlock(block, r, c)){
+          return true; 
         }
       }
     }
   }
-  return false; // No moves possible for any of the blocks
+  return false; 
 }
 
 
 const blockGenerator = new BlockGenerator();
-
 const Cell = ({ value }) => {
   const cellStyle = value === 1 ? styles.filledCell : styles.emptyCell;
   return <View style={[styles.cell, cellStyle]} />;
@@ -174,12 +165,9 @@ const Blockoduko = () => {
   const [availableBlocks, setAvailableBlocks] = useState(() => blockGenerator.getNewBlockSet());
   const [score, setScore] = useState(0);
   const [selectedBlock, setSelectedBlock] = useState(null);
-  // ✅ New state for managing game over UI
   const [isGameOver, setIsGameOver] = useState(false);
 
-  // ✅ Centralized game-over logic
   useEffect(() => {
-    // Only check if there are blocks to place and game isn't already over
     if (availableBlocks.length > 0 && !isGameOver) {
       if (!canAnyBlockBePlaced(grid, availableBlocks)) {
         setIsGameOver(true);
@@ -187,7 +175,6 @@ const Blockoduko = () => {
     }
   }, [grid, availableBlocks, isGameOver]);
 
-  // ✅ New restart function
   const handleRestart = () => {
     setGrid(new Grid());
     setScore(0);
@@ -198,7 +185,6 @@ const Blockoduko = () => {
 
 
   const handleCellPress = (rowIndex, colIndex) => {
-    // Prevent actions if game is over or no block is selected
     if (isGameOver || !selectedBlock) {
         if (!selectedBlock && !isGameOver) {
             Alert.alert("No Block Selected", "Please select a block from the bottom first.");
@@ -268,7 +254,6 @@ const Blockoduko = () => {
         ))}
       </View>
 
-      {/* ✅ Conditionally rendered Game Over Overlay */}
       {isGameOver && (
         <View style={styles.gameOverOverlay}>
           <Text style={styles.gameOverText}>Game Over</Text>
@@ -322,7 +307,6 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: '#e0a800',
     },
-    // ✅ New styles for the overlay
     gameOverOverlay: {
         position: 'absolute',
         top: 0,
