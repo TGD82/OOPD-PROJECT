@@ -326,7 +326,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     borderWidth: 2,
-    borderColor: "rgba(44, 198, 225, 1)",
+    borderColor: "rgba(225, 177, 44, 1)",
   },
   profileIcon: {
     fontSize: 20,

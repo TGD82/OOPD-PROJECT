@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 
-const GRID_SIZE = 30;
+const GRID_SIZE = 20;
 const CELL_SIZE = 15;
 const INITIAL_SPEED = 150;
 
@@ -463,8 +463,8 @@ const styles = StyleSheet.create({
     gap: 5,
   },
   button: {
-    width: 60,
-    height: 60,
+    width: 50,
+    height: 50,
     backgroundColor: '#4ECDC4',
     borderRadius: 10,
     justifyContent: 'center',
@@ -479,8 +479,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFD700',
   },
   resetButton: {
-    width: 130,
-    backgroundColor: '#FF6B6B',
+    width: 120,
+    backgroundColor: '#fac824ff',
     marginTop: 10,
   },
   legend: {
@@ -540,7 +540,7 @@ const styles = StyleSheet.create({
   gameOverTitle: {
     fontSize: 32,
     fontWeight: 'bold',
-    color: '#FF6B6B',
+    color: '#ffcd28ff',
     marginBottom: 20,
   },
   gameOverScore: {
