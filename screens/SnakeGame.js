@@ -454,7 +454,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
   },
   controls: {
-    marginTop: 30,
+    marginTop: 25,
     alignItems: 'center',
     gap: 5,
   },
@@ -481,7 +481,7 @@ const styles = StyleSheet.create({
   resetButton: {
     width: 120,
     backgroundColor: '#fac824ff',
-    marginTop: 10,
+    marginTop: 8,
   },
   legend: {
     marginTop: 20,
@@ -496,7 +496,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   oopInfo: {
-    marginTop: 20,
+    marginTop: 18,
     padding: 15,
     backgroundColor: '#16213e',
     borderRadius: 8,
@@ -541,7 +541,7 @@ const styles = StyleSheet.create({
     fontSize: 32,
     fontWeight: 'bold',
     color: '#ffcd28ff',
-    marginBottom: 20,
+    marginBottom: 18,
   },
   gameOverScore: {
     fontSize: 16,

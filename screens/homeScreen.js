@@ -444,7 +444,7 @@ const styles = StyleSheet.create({
     shadowRadius: 6,
   },
   playButtonPressed: {
-    backgroundColor: "#f4cb15ff",
+    backgroundColor: "#c4a20dff",
   },
   playIcon: {
     fontSize: 14,
