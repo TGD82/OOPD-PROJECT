@@ -51,7 +51,7 @@ class BlockGenerator{
 }
 
 class Grid{
-  constructor(size = 9){
+  constructor(size = 8){
     this.size = size;
     this.matrix = Array(size).fill(null).map(() => Array(size).fill(0));
   }
