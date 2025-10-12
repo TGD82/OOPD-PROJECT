@@ -61,7 +61,7 @@ class SudokuBoard {
   generatePuzzleFromSolution() {
     if (!this.solution || this.solution.flat().every((v) => v === 0)) {
       this.generateSolvedBoard();
-    }
+    } 
     const sol = this.solution;
     const positionsByDigit = {};
     for (let d = 1; d <= 9; d++) positionsByDigit[d] = [];
