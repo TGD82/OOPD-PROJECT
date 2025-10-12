@@ -18,14 +18,11 @@ class SudokuBoard {
       .map(() => Array(this.size).fill(0));
   }
 
-  // Backtracking solver/generator helper: checks if placing num at r,c is valid
   _canPlace(board, r, c, num) {
-    // row/col
     for (let i = 0; i < this.size; i++) {
       if (board[r][i] === num) return false;
       if (board[i][c] === num) return false;
     }
-    // box
     const br = Math.floor(r / this.boxSize) * this.boxSize;
     const bc = Math.floor(c / this.boxSize) * this.boxSize;
     for (let rr = 0; rr < this.boxSize; rr++) {
@@ -36,12 +33,10 @@ class SudokuBoard {
     return true;
   }
 
-  // Solve using backtracking (mutates board)
   _solveBacktrack(board) {
     for (let r = 0; r < this.size; r++) {
       for (let c = 0; c < this.size; c++) {
         if (board[r][c] === 0) {
-          // try numbers in random order for variety
           const nums = [1, 2, 3, 4, 5, 6, 7, 8, 9].sort(() => Math.random() - 0.5);
           for (const n of nums) {
             if (this._canPlace(board, r, c, n)) {
@@ -54,33 +49,24 @@ class SudokuBoard {
         }
       }
     }
-    return true; // full
+    return true;
   }
 
-  // Generates a complete solved Sudoku board
   generateSolvedBoard() {
     const board = this._emptyBoard();
-    // shuffle first row for variety then backtrack
     const firstRow = [1, 2, 3, 4, 5, 6, 7, 8, 9].sort(() => Math.random() - 0.5);
     board[0] = firstRow.slice();
-    // fill rest via backtracking
     const ok = this._solveBacktrack(board);
-    if (!ok) {
-      // unlikely, retry
-      return this.generateSolvedBoard();
-    }
+    if (!ok) return this.generateSolvedBoard();
     this.solution = board.map((r) => r.slice());
     return this.solution;
   }
 
-  // Given a solved board create puzzle with exactly 12 revealed entries per spec
-  // Returns { puzzleBoard, givens } where givens is a map of "r-c" -> true
   generatePuzzleFromSolution() {
     if (!this.solution || this.solution.flat().every((v) => v === 0)) {
       this.generateSolvedBoard();
     }
     const sol = this.solution;
-    // positionsByDigit: 1..9 -> array of [r,c] where that digit appears in solution
     const positionsByDigit = {};
     for (let d = 1; d <= 9; d++) positionsByDigit[d] = [];
     for (let r = 0; r < this.size; r++) {
@@ -89,54 +75,40 @@ class SudokuBoard {
       }
     }
 
-    // choose distinct digits:
     const digits = [1, 2, 3, 4, 5, 6, 7, 8, 9].sort(() => Math.random() - 0.5);
-    // pick i (3 occurrences), j,k (2 each), and five singles (x,y,z,w,v)
     const chosen = {
       thrice: digits[0],
       twice: [digits[1], digits[2]],
-      singles: digits.slice(3, 8), // five digits
+      singles: digits.slice(3, 8),
     };
 
-    // Create a list of "requirements": digit -> count
     const requirements = {};
     requirements[chosen.thrice] = 3;
-    requirements[chosen.twise] = requirements[chosen.twise]; // just to avoid lint (unused)
     for (const d of chosen.twice) requirements[d] = 2;
     for (const d of chosen.singles) requirements[d] = 1;
 
-    // Now pick positions for each digit from positionsByDigit
     const chosenPositions = [];
     for (const [digitStr, count] of Object.entries(requirements)) {
       const digit = parseInt(digitStr, 10);
-      // ensure there are enough positions (always true since each digit appears 9 times in solved board)
-      const available = positionsByDigit[digit].slice(); // copy
-      // shuffle
+      const available = positionsByDigit[digit].slice();
       for (let i = available.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [available[i], available[j]] = [available[j], available[i]];
-      }
-      if (available.length < count) {
-        // extremely unlikely; regenerate whole puzzle
-        return this.generatePuzzleFromSolution();
       }
       for (let k = 0; k < count; k++) {
         chosenPositions.push({ digit, pos: available[k] });
       }
     }
 
-    // If by some chance we have less/more than 12 (should be exactly 12), adjust
     if (chosenPositions.length !== 12) {
-      // fallback: pick random 12 positions from entire board to reveal
       const allPositions = [];
-      for (let r = 0; r < this.size; r++) for (let c = 0; c < this.size; c++) allPositions.push([r, c]);
+      for (let r = 0; r < this.size; r++)
+        for (let c = 0; c < this.size; c++) allPositions.push([r, c]);
       const sel = allPositions.sort(() => Math.random() - 0.5).slice(0, 12);
       const fallbackPositions = sel.map(([r, c]) => ({ digit: sol[r][c], pos: [r, c] }));
-      // proceed with those
       for (let i = 0; i < fallbackPositions.length; i++) chosenPositions[i] = fallbackPositions[i];
     }
 
-    // Build puzzle board by revealing only chosen positions
     const puzzle = this._emptyBoard();
     const givens = {};
     for (const entry of chosenPositions) {
@@ -145,23 +117,15 @@ class SudokuBoard {
       givens[`${r}-${c}`] = true;
     }
 
-    // Validate puzzle (should be valid because digits are taken from a valid solution)
-    if (!this.isValidBoard(puzzle)) {
-      // improbable, but regenerate
-      return this.generatePuzzleFromSolution();
-    }
-
     return { puzzleBoard: puzzle, givens, digitsChosen: chosen };
   }
 
-  // Public: generate board (returns { puzzleBoard, givens, solution })
   generateBoard() {
     this.generateSolvedBoard();
     const { puzzleBoard, givens, digitsChosen } = this.generatePuzzleFromSolution();
     return { puzzleBoard, givens, solution: this.solution.map((r) => r.slice()), digitsChosen };
   }
 
-  // Validate board: no duplicates in any row/col/3x3 box (ignores zeros)
   isValidBoard(board) {
     const n = this.size;
     const seenRow = Array(n).fill(0).map(() => new Set());
@@ -172,7 +136,6 @@ class SudokuBoard {
       for (let c = 0; c < n; c++) {
         const v = board[r][c];
         if (v === 0) continue;
-        if (v < 1 || v > 9) return false;
         if (seenRow[r].has(v)) return false;
         seenRow[r].add(v);
         if (seenCol[c].has(v)) return false;
@@ -185,7 +148,6 @@ class SudokuBoard {
     return true;
   }
 
-  // Check solved: full filled and equals solution
   isSolved(board) {
     for (let r = 0; r < this.size; r++) {
       for (let c = 0; c < this.size; c++) {
@@ -196,7 +158,6 @@ class SudokuBoard {
     return true;
   }
 
-  // Public solver: returns solved board (deep copy) or null if unsolvable
   solveBoard(board) {
     const copy = board.map((r) => r.slice());
     const ok = this._solveBacktrack(copy);
@@ -204,20 +165,13 @@ class SudokuBoard {
   }
 }
 
-/**
- * React Native UI component
- */
 const sudokuBoard = new SudokuBoard();
 
 const NumberPad = ({ onPick, onClear }) => {
   return (
     <View style={styles.numberPad}>
       {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => (
-        <TouchableOpacity
-          key={n}
-          style={styles.numButton}
-          onPress={() => onPick(n)}
-        >
+        <TouchableOpacity key={n} style={styles.numButton} onPress={() => onPick(n)}>
           <Text style={styles.numButtonText}>{n}</Text>
         </TouchableOpacity>
       ))}
@@ -232,7 +186,7 @@ const SudokuApp = () => {
   const [puzzle, setPuzzle] = useState(() => sudokuBoard._emptyBoard());
   const [givens, setGivens] = useState({});
   const [solution, setSolution] = useState(() => sudokuBoard._emptyBoard());
-  const [selected, setSelected] = useState(null); // [r,c]
+  const [selected, setSelected] = useState(null);
   const [digitsChosen, setDigitsChosen] = useState(null);
 
   useEffect(() => {
@@ -248,15 +202,13 @@ const SudokuApp = () => {
     setSelected(null);
   }
 
-  // handle pick number for selected cell
   function handlePickNumber(num) {
     if (!selected) {
       Alert.alert("No cell selected", "Tap a non-red cell first.");
       return;
     }
     const [r, c] = selected;
-    if (givens[`${r}-${c}`]) return; // should not happen, UI prevents tapping givens
-    // Try place
+    if (givens[`${r}-${c}`]) return;
     const newBoard = puzzle.map((row) => row.slice());
     newBoard[r][c] = num;
     if (!sudokuBoard.isValidBoard(newBoard)) {
@@ -284,7 +236,7 @@ const SudokuApp = () => {
   }
 
   function handleCellPress(r, c) {
-    if (givens[`${r}-${c}`]) return; // can't select givens
+    if (givens[`${r}-${c}`]) return;
     setSelected((prev) => {
       if (prev && prev[0] === r && prev[1] === c) return null;
       return [r, c];
@@ -301,11 +253,6 @@ const SudokuApp = () => {
     Alert.alert("Solved", "Board filled by solver.");
   }
 
-  function handleValidateBoard() {
-    const ok = sudokuBoard.isValidBoard(puzzle);
-    Alert.alert("Board Validation", ok ? "Board is valid (no conflicts)." : "Board has conflicts.");
-  }
-
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Sudoku</Text>
@@ -315,9 +262,6 @@ const SudokuApp = () => {
         </TouchableOpacity>
         <TouchableOpacity style={styles.controlButton} onPress={handleSolveBoard}>
           <Text style={styles.controlText}>Solve</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.controlButton} onPress={handleValidateBoard}>
-          <Text style={styles.controlText}>Validate</Text>
         </TouchableOpacity>
       </View>
 
@@ -337,7 +281,6 @@ const SudokuApp = () => {
                   <View
                     style={[
                       styles.cell,
-                      // bolder border for 3x3 boxes
                       (c % 3 === 0) && styles.leftThickBorder,
                       (r % 3 === 0) && styles.topThickBorder,
                       (c === 8) && styles.rightThickBorder,
@@ -402,14 +345,13 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
   cellText: { fontSize: 18 },
-  givenCell: { backgroundColor: "#ffecec" }, // light red
+  givenCell: { backgroundColor: "#ffecec" },
   givenText: { color: "#c62828", fontWeight: "700" },
   selectedCell: { backgroundColor: "#e3f2fd" },
   leftThickBorder: { borderLeftWidth: 2 },
   topThickBorder: { borderTopWidth: 2 },
   rightThickBorder: { borderRightWidth: 2 },
   bottomThickBorder: { borderBottomWidth: 2 },
-
   numberPad: {
     marginTop: 14,
     width: "100%",
@@ -430,7 +372,6 @@ const styles = StyleSheet.create({
   },
   numButtonText: { fontSize: 16, fontWeight: "600" },
   clearButton: { backgroundColor: "#ffebee" },
-
   metaRow: { marginTop: 10, flexDirection: "row", alignItems: "center" },
   metaText: { fontSize: 14, fontWeight: "600", marginRight: 6 },
   metaTextSmall: { fontSize: 13, color: "#333" },
