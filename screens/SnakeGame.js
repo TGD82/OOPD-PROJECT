@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 
 const GRID_SIZE = 20;
 const CELL_SIZE = 15;
-const INITIAL_SPEED = 150;
+const INITIAL_SPEED = 200;
 
 class GameObject {
   #x;
