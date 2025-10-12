@@ -1,10 +1,6 @@
 import { useEffect, useState } from "react";
 import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
-/**
- * SudokuBoard class: generates solved board, creates puzzle with 12 entries
- * (3 of one digit, 2 of two digits, 1 of five digits), validates, solves.
- */
 class SudokuBoard {
   constructor() {
     this.size = 9;
@@ -18,7 +14,6 @@ class SudokuBoard {
       .map(() => Array(this.size).fill(0));
   }
 
-  // Backtracking solver/generator helper: checks if placing num at r,c is valid
   _canPlace(board, r, c, num) {
     // row/col
     for (let i = 0; i < this.size; i++) {
@@ -36,7 +31,6 @@ class SudokuBoard {
     return true;
   }
 
-  // Solve using backtracking (mutates board)
   _solveBacktrack(board) {
     for (let r = 0; r < this.size; r++) {
       for (let c = 0; c < this.size; c++) {
