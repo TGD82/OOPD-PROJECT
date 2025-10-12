@@ -29,29 +29,29 @@ const BLOCK_SHAPES = {
   T_r: [[0, 1], [1, 1], [0, 1]],
 };
 
-class Block {
-  constructor(shape) {
+class Block{
+  constructor(shape){
     this.shape = shape;
   }
 }
 
-class BlockGenerator {
-  constructor() {
+class BlockGenerator{
+  constructor(){
     this.allBlocks = Object.values(BLOCK_SHAPES).map(shape => new Block(shape));
   }
 
-  getRandomBlock() {
+  getRandomBlock(){
     const randomIndex = Math.floor(Math.random() * this.allBlocks.length);
     return this.allBlocks[randomIndex];
   }
 
-  getNewBlockSet() {
+  getNewBlockSet(){
     return [this.getRandomBlock(), this.getRandomBlock(), this.getRandomBlock()];
   }
 }
 
-class Grid {
-  constructor(size = 9) {
+class Grid{
+  constructor(size = 8){
     this.size = size;
     this.matrix = Array(size).fill(null).map(() => Array(size).fill(0));
   }
